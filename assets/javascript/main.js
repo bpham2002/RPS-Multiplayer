@@ -25,6 +25,9 @@
  $("#list-2").hide()
  var num = sessionStorage.getItem('player')
  database.ref('players/' + num).remove();
+ database.ref('chats/').set({
+     message: ""
+ });
  database.ref().once('value').then(function(snapshot) {
      totalplayers = snapshot.val().members.mem;
 
@@ -34,6 +37,7 @@
              mem: totalplayers
          })
          localStorage.setItem('isplayer_' + num, false);
+         $("#player").empty()
          sessionStorage.setItem('player', player)
      } else {
          localStorage.setItem('isplayer_1', false);
@@ -43,7 +47,10 @@
  })
 
 
+ database.ref('chats/message').on('value', function(snapshot) {
 
+     $("#chat").append(snapshot.val() + '<br>')
+ })
 
 
  database.ref().on('value', function(shot) {
@@ -54,10 +61,12 @@
 
      } else { //if (shot.val().members.mem > 0) {
          var temp = shot.val().members.mem;
+
          for (var i = 1; i <= temp; i++) {
              database.ref('players/' + i + '/name').once('value', function(snapshot) {
 
                  $("#player-" + i).text(snapshot.val())
+
              });
              database.ref('players/' + i + '/wins').once('value', function(snapshot) {
 
@@ -83,7 +92,12 @@
          wins: 0,
          loses: 0
      });
-     $("#player").text('You are player-' + num);
+     database.ref('players/' + num + '/name').once('value').then(function(snapshot) {
+
+         $("#player").append("Hi " + snapshot.val())
+         $("#player").append(" You are player-" + num);
+     })
+
      $("#register").empty()
      $("#list-" + num).show()
      sessionStorage.setItem('player', num)
@@ -91,6 +105,46 @@
  // ================================================================================
 
  // On Click
+ $("#send-button").on('click', function() {
+         event.preventDefault();
+         var num = sessionStorage.getItem('player')
+         database.ref('players/' + num + '/name').on('value', function(snapshot) {
+
+             var name = snapshot.val()
+             database.ref('chats/').set({
+                 message: name + ': ' + $("#message").val().trim()
+             })
+
+         });
+
+
+     })
+     //var num = sessionStorage.getItem('player')
+ $("#rock-" + num).on('click', function() {
+     event.preventDefault();
+     var num = sessionStorage.getItem('player')
+     database.ref('players/' + num + '/chooses').set({
+         chooses: 'Rock'
+     })
+
+ });
+ $("#paper-" + num).on('click', function() {
+     event.preventDefault();
+     var num = sessionStorage.getItem('player')
+     database.ref('players/' + num + '/chooses').set({
+         chooses: 'Paper'
+     })
+
+ });
+ $("#scissors-" + num).on('click', function() {
+     event.preventDefault();
+     var num = sessionStorage.getItem('player')
+     database.ref('players/' + num + '/chooses').set({
+         chooses: 'Scissors'
+     })
+
+ });
+
  $("#add-button").on("click", function() {
      event.preventDefault();
      var isplayer_1 = localStorage.getItem('isplayer_1');
@@ -110,7 +164,11 @@
                  wins: 0,
                  loses: 0
              });
-             $("#player").text('You are player-' + member);
+             database.ref('players/' + member + '/name').once('value').then(function(snapshot) {
+
+                 $("#player").append("Hi " + snapshot.val())
+                 $("#player").append(" You are player-" + member);
+             })
              $("#register").empty()
              $("#list-" + member).show()
              sessionStorage.setItem('player', member)

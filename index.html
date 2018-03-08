@@ -31,23 +31,39 @@
                         <p>Loses: <span id="player-loses-1"></span></p>
                     </div>
                     <ul class="list-group list-group-flush" id="list-1">
-                        <button type="button" class="list-group-item list-group-item-action">Rock</button>
-                        <button type="button" class="list-group-item list-group-item-action">Paper</button>
-                        <button type="button" class="list-group-item list-group-item-action">Scissors</button>
+                        <button type="button" class="list-group-item list-group-item-action" id="rock-1">Rock</button>
+                        <button type="button" class="list-group-item list-group-item-action" id="paper-1">Paper</button>
+                        <button type="button" class="list-group-item list-group-item-action" id="scissors-1">Scissors</button>
                     </ul>
                 </div>
             </div>
             <div class="col-md-4 text-center">
+
                 <div class="input-group mb-3" id="register">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">@</span>
+                        <span class="input-group-text" id="basic-addon1">Username</span>
                     </div>
                     <input type="text" class="form-control" id="add-user" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                     <div class="input-group-append">
                         <button class="btn btn-outline-primary" id="add-button" type="button">Add</button>
                     </div>
                 </div>
-                <p id="player"></p>
+                <div id="game-area">
+                    <p id="player"></p>
+
+                </div>
+
+                <br><br><br><br><br>
+
+                <div class="input-group mb-3" id="chat-area">
+                    <input type="text" class="form-control" id="message" placeholder="message" aria-label="message" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="send-button">Send</button>
+                    </div>
+                </div>
+
+                <p class="float-left" id='chat'></p>
+
             </div>
             <div class="card text-center" style="width: 18rem;">
                 <img class="card-img-top" src="http://3.bp.blogspot.com/-KaoyCn4Be00/TyOSomaeDKI/AAAAAAAAAg4/bLfEBU1xULI/s1600/Wild9.jpg" alt="Card image cap">
@@ -58,9 +74,9 @@
                     <p>Loses: <span id="player-loses-2"></span></p>
                 </div>
                 <ul class="list-group list-group-flush" id="list-2">
-                    <button type="button" class="list-group-item list-group-item-action">Rock</button>
-                    <button type="button" class="list-group-item list-group-item-action">Paper</button>
-                    <button type="button" class="list-group-item list-group-item-action">Scissors</button>
+                    <button type="button" class="list-group-item list-group-item-action" id="rock-2">Rock</button>
+                    <button type="button" class="list-group-item list-group-item-action" id="paper-2">Paper</button>
+                    <button type="button" class="list-group-item list-group-item-action" id="scissors-2">Scissors</button>
                 </ul>
             </div>
         </div>
