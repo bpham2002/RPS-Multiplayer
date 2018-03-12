@@ -25,43 +25,40 @@
  $("#list-2").hide()
  var num = sessionStorage.getItem('player')
  database.ref('players/' + num).remove();
- database.ref('chats/').set({
-     message: ""
- });
- database.ref().once('value').then(function(snapshot) {
-     totalplayers = snapshot.val().members.mem;
 
-     if (num > 0) {
+
+
+ if (num > 0) {
+     database.ref('mem/').once('value').then(function(snapshot) {
+         totalplayers = snapshot.val();
          totalplayers--;
-         database.ref('members/').set({
-             mem: totalplayers
-         })
-         localStorage.setItem('isplayer_' + num, false);
-         $("#player").empty()
-         sessionStorage.setItem('player', player)
-     } else {
-         localStorage.setItem('isplayer_1', false);
-         localStorage.setItem('isplayer_2', false);
-         sessionStorage.setItem('player', player)
+         database.ref('mem/').set(totalplayers)
+     })
+     localStorage.setItem('isplayer_' + num, false);
+     $("#player").empty()
+     sessionStorage.setItem('player', player)
+ } else {
+     localStorage.setItem('isplayer_1', false);
+     localStorage.setItem('isplayer_2', false);
+     sessionStorage.setItem('player', player)
+ }
+
+
+ database.ref('message/').on('value', function(snapshot) {
+     if (snapshot.val() != '') {
+         var temp = $("<p></p>")
+         temp.append(snapshot.val())
+         $("#chat").prepend(temp)
      }
  })
-
-
- database.ref('chats/message').on('value', function(snapshot) {
-
-     $("#chat").append(snapshot.val() + '<br>')
- })
-
-
  database.ref().on('value', function(shot) {
      if (shot.val() === null) {
-         database.ref('members/').set({
-             mem: 0
-         })
+         database.ref('mem/').set(totalplayers)
+         database.ref('message/').set('');
 
      } else { //if (shot.val().members.mem > 0) {
-         var temp = shot.val().members.mem;
-
+         var temp = shot.val().mem;
+         database.ref('message/').set('');
          for (var i = 1; i <= temp; i++) {
              database.ref('players/' + i + '/name').once('value', function(snapshot) {
 
@@ -84,9 +81,7 @@
  // Functions
  function setPlayer(num) {
      num++;
-     database.ref('members/').set({
-         mem: num
-     });
+     database.ref('mem/').set(num);
      database.ref('players/' + num).set({
          name: $("#add-user").val().trim(),
          wins: 0,
@@ -106,52 +101,45 @@
 
  // On Click
  $("#send-button").on('click', function() {
-         event.preventDefault();
-         var num = sessionStorage.getItem('player')
-         database.ref('players/' + num + '/name').on('value', function(snapshot) {
-
-             var name = snapshot.val()
-             database.ref('chats/').set({
-                 message: name + ': ' + $("#message").val().trim()
-             })
-
-         });
-
-
-     })
-     //var num = sessionStorage.getItem('player')
- $("#rock-" + num).on('click', function() {
      event.preventDefault();
      var num = sessionStorage.getItem('player')
-     database.ref('players/' + num + '/chooses').set({
-         chooses: 'Rock'
-     })
+     database.ref('players/' + num + '/name').once('value', function(snapshot) {
+
+         var name = snapshot.val()
+         database.ref('message/').set(name + ': ' + $("#message").val().trim())
+
+     });
+     $("#message").val('')
+
+ })
+
+ $(document).on('click', "#rock-" + sessionStorage.getItem('player'), function() {
+     event.preventDefault();
+     var num = sessionStorage.getItem('player')
+     database.ref('players/' + num + '/chooses').set('Rock')
 
  });
- $("#paper-" + num).on('click', function() {
+ $(document).on('click', "#paper-" + sessionStorage.getItem('player'), function() {
      event.preventDefault();
      var num = sessionStorage.getItem('player')
-     database.ref('players/' + num + '/chooses').set({
-         chooses: 'Paper'
-     })
+     database.ref('players/' + num + '/chooses').set('Paper')
+
 
  });
- $("#scissors-" + num).on('click', function() {
+ $(document).on('click', "#scissors-" + sessionStorage.getItem('player'), function() {
      event.preventDefault();
      var num = sessionStorage.getItem('player')
-     database.ref('players/' + num + '/chooses').set({
-         chooses: 'Scissors'
-     })
+     database.ref('players/' + num + '/chooses').set('Scissors')
 
  });
 
- $("#add-button").on("click", function() {
+ $(document).on('click', "#add-button", function() {
      event.preventDefault();
      var isplayer_1 = localStorage.getItem('isplayer_1');
      var isplayer_2 = localStorage.getItem('isplayer_2');
-     return database.ref('members/').once('value').then(function(snapshot) {
+     return database.ref('mem/').once('value').then(function(snapshot) {
 
-         var member = parseInt(snapshot.val().mem)
+         var member = parseInt(snapshot.val())
          if (member < 1) {
              setPlayer(member);
              localStorage.setItem('isplayer_1', true)
@@ -174,9 +162,7 @@
              sessionStorage.setItem('player', member)
              localStorage.setItem('isplayer_1', true)
              member++;
-             database.ref('members/').set({
-                 mem: member
-             });
+             database.ref('mem/').set(member);
 
          }
      })
