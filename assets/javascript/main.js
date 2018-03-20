@@ -19,7 +19,10 @@
  // Initializing our click count at 0
 
  var player = 0;
- var totalplayers = 0;
+ var player1wins = 0;
+ var player1loses = 0;
+ var player2wins = 0;
+ var player2loses = 0;
 
  $("#list-1").hide()
  $("#list-2").hide()
@@ -41,6 +44,7 @@
      localStorage.setItem('isplayer_1', false);
      localStorage.setItem('isplayer_2', false);
      sessionStorage.setItem('player', player)
+
  }
 
 
@@ -77,8 +81,76 @@
          }
      }
  })
+ var rps1;
+ var rps2;
+ database.ref('players/' + num + '/chooses').on('value', function(data) {
 
- // Functions
+         if (data.val() != null) {
+             if (num === '1') {
+                 rps1 = data.val()
+                 $('#result').empty()
+                 console.log('rps1:' + rps1)
+                 database.ref('players/2/chooses').on('value', function(data2) {
+                     if ((data2.val() != null) && (rps1 != null)) {
+
+                         rps2 = data2.val()
+                         console.log('rps2:' + rps2)
+                         compare(rps1, rps2, num)
+
+                     }
+                 })
+             } else if (num === '2') {
+                 rps2 = data.val()
+                 $('#result').empty()
+                 console.log('rps2:' + rps2)
+                 database.ref('players/1/chooses').on('value', function(data1) {
+                     if ((data1.val() != null) && (rps2 != null)) {
+
+                         rps1 = data1.val()
+                         console.log('rps1:' + rps1)
+                         compare(rps1, rps2, num)
+                     }
+                 })
+             }
+
+         }
+     })
+     // Functions
+ function compare(p1, p2, n) {
+     if ((p1 === 'Rock' && p2 === 'Scissors') || (p1 === 'Paper' && p2 === 'Rock') || (p1 === 'Scissors' && p2 === 'Paper')) {
+
+         if (n === '1') {
+             $('#result').text('You win!')
+             player1wins++
+             database.ref('players/' + n + '/wins').set(player1wins)
+         } else {
+             $('#result').text('You lose!')
+             player2loses++
+             database.ref('players/' + n + '/loses').set(player2loses)
+         }
+
+     } else if ((p2 === 'Rock' && p1 === 'Scissors') || (p2 === 'Paper' && p1 === 'Rock') || (p2 === 'Scissors' && p1 === 'Paper')) {
+         if (n === '2') {
+             $('#result').text('You win!')
+             player2wins++
+             database.ref('players/' + n + '/wins').set(player2wins)
+         } else {
+             $('#result').text('You lose!')
+             player1loses++
+             database.ref('players/1/loses').set(player1loses)
+         }
+
+     } else {
+         $('#result').text('You Tie!')
+     }
+     setTimeout(function() {
+         database.ref('players/' + n + '/chooses').remove()
+         $('#result').text('')
+         rps1 = null;
+         rps2 = null;
+     }, 5000);
+ }
+
  function setPlayer(num) {
      num++;
      database.ref('mem/').set(num);
@@ -102,7 +174,7 @@
  // On Click
  $("#send-button").on('click', function() {
      event.preventDefault();
-     var num = sessionStorage.getItem('player')
+     num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/name').once('value', function(snapshot) {
 
          var name = snapshot.val()
@@ -113,22 +185,22 @@
 
  })
 
- $(document).on('click', "#rock-" + sessionStorage.getItem('player'), function() {
+ $(document).on('click', "#rock", function() {
      event.preventDefault();
-     var num = sessionStorage.getItem('player')
+     num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Rock')
 
+
  });
- $(document).on('click', "#paper-" + sessionStorage.getItem('player'), function() {
+ $(document).on('click', "#paper", function() {
      event.preventDefault();
-     var num = sessionStorage.getItem('player')
+     num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Paper')
 
-
  });
- $(document).on('click', "#scissors-" + sessionStorage.getItem('player'), function() {
+ $(document).on('click', "#scissors", function() {
      event.preventDefault();
-     var num = sessionStorage.getItem('player')
+     num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Scissors')
 
  });
