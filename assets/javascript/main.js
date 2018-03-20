@@ -80,10 +80,14 @@
              })
          }
      }
- })
- var rps1;
- var rps2;
- database.ref('players/' + num + '/chooses').on('value', function(data) {
+ });
+
+ function maingame() {
+
+     var rps1;
+     var rps2;
+     num = sessionStorage.getItem('player')
+     database.ref('players/' + num + '/chooses').on('value', function(data) {
 
          if (data.val() != null) {
              if (num === '1') {
@@ -115,7 +119,8 @@
 
          }
      })
-     // Functions
+ }
+ // Functions
  function compare(p1, p2, n) {
      if ((p1 === 'Rock' && p2 === 'Scissors') || (p1 === 'Paper' && p2 === 'Rock') || (p1 === 'Scissors' && p2 === 'Paper')) {
 
@@ -167,6 +172,7 @@
 
      $("#register").empty()
      $("#list-" + num).show()
+
      sessionStorage.setItem('player', num)
  }
  // ================================================================================
@@ -189,20 +195,20 @@
      event.preventDefault();
      num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Rock')
-
+     maingame()
 
  });
  $(document).on('click', "#paper", function() {
      event.preventDefault();
      num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Paper')
-
+     maingame()
  });
  $(document).on('click', "#scissors", function() {
      event.preventDefault();
      num = sessionStorage.getItem('player')
      database.ref('players/' + num + '/chooses').set('Scissors')
-
+     maingame()
  });
 
  $(document).on('click', "#add-button", function() {
